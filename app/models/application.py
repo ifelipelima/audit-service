@@ -1,11 +1,17 @@
-from uuid import UUID
+from datetime import datetime
+from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.audit_event import AuditEvent
+
+if TYPE_CHECKING:
+    from app.models.audit_event import AuditEvent
 
 class Application(Base):
     __tablename__ = "applications"
@@ -34,7 +40,11 @@ class Application(Base):
         nullable=False
     )
 
-    created_at: Mapped[DateTime] = mapped_column(
+    events: Mapped[list["AuditEvent"]] = relationship(
+        back_populates="application",
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False
