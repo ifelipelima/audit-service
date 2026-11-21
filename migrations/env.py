@@ -2,6 +2,8 @@ from logging.config import fileConfig
 
 from alembic import context
 
+import app.models
+
 from app.db.base import Base
 from app.db.session import database_url, engine
 
