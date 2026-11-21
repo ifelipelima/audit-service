@@ -3,6 +3,8 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![OpenAPI](https://img.shields.io/badge/OpenAPI-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
 
 **Serviço Reutilizável de Auditoria de Eventos**
@@ -19,6 +21,7 @@ O projeto é desenvolvido como parte da disciplina de Reuso de Software da Unive
 
 [![Git](https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white)](https://git-scm.com/downloads)
 [![Python 3.12+](https://img.shields.io/badge/Python%203.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://docs.docker.com/get-docker/)
 
 ### Instalação e execução
 
@@ -41,7 +44,21 @@ py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-**4. Inicie a aplicação**
+**4. Configure as variáveis de ambiente**
+
+Copie o arquivo de exemplo:
+
+```bash
+cp .env.example .env
+```
+
+**5. Inicie o PostgreSQL**
+
+```bash
+docker compose up -d db
+```
+
+**6. Inicie a aplicação**
 
 ```bash
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
