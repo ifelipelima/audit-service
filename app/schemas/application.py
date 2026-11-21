@@ -17,4 +17,3 @@ class ApplicationRead(BaseModel):
 
 class ApplicationCreated(ApplicationRead):
     api_key: str
-
