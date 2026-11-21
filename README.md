@@ -58,7 +58,13 @@ cp .env.example .env
 docker compose up -d db
 ```
 
-**6. Inicie a aplicação**
+**6. Aplique as migrações do banco de dados**
+
+```bash
+.\.venv\Scripts\python.exe -m alembic upgrade head
+```
+
+**7. Inicie a aplicação**
 
 ```bash
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
