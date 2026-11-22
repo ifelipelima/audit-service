@@ -1,6 +1,7 @@
 from app.db.base import Base
 from app.models import Application
 
+
 def test_application_model_is_registered():
     assert Application.__table__.name in Base.metadata.tables
 

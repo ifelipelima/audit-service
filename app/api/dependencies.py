@@ -1,10 +1,9 @@
 import secrets
 from typing import Annotated
 
-from sqlalchemy.orm import Session
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.security import hash_api_key

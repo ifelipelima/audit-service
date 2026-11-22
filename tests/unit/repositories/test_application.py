@@ -1,8 +1,10 @@
 from unittest.mock import Mock
+
 from sqlalchemy.orm import Session
 
 from app.models.application import Application
 from app.repositories.application import ApplicationRepository
+
 
 def test_create_application():
     session = Mock(spec=Session)

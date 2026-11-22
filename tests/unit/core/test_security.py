@@ -2,6 +2,7 @@ import hashlib
 
 from app.core.security import generate_api_key, hash_api_key
 
+
 def test_generate_api_key_format():
     api_key = generate_api_key()
 

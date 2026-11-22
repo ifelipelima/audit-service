@@ -2,8 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 
-import app.models
-
+import app.models  # noqa: F401
 from app.db.base import Base
 from app.db.session import database_url, engine
 

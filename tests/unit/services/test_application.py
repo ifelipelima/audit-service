@@ -8,7 +8,8 @@ from app.core.security import hash_api_key
 from app.models.application import Application
 from app.repositories.application import ApplicationRepository
 from app.schemas.application import ApplicationCreate
-from app.services.application import ApplicationService, ApplicationAlreadyExistsError
+from app.services.application import ApplicationAlreadyExistsError, ApplicationService
+
 
 @pytest.fixture
 def session():

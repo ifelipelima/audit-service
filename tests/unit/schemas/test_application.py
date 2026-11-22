@@ -3,6 +3,7 @@ from pydantic import ValidationError
 
 from app.schemas.application import ApplicationCreate
 
+
 def test_application_create_valid_data():
     application = ApplicationCreate(name="Test Application", slug="test-application")
     assert application.name == "Test Application"

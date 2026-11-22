@@ -8,6 +8,7 @@ from app.api.dependencies import get_current_application
 from app.core.security import hash_api_key
 from app.models.application import Application
 
+
 def test_get_current_application_with_valid_key():
     session = Mock(spec=Session)
     application = Application(name="Test Application", slug="test-application", api_key_hash=hash_api_key("aud_valid_key"))
