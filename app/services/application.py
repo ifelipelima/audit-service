@@ -6,6 +6,7 @@ from app.models.application import Application
 from app.repositories.application import ApplicationRepository
 from app.schemas.application import ApplicationCreate
 
+
 class ApplicationAlreadyExistsError(Exception):
     pass
 

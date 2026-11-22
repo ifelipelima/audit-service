@@ -9,6 +9,7 @@ from app.db.session import SessionLocal
 from app.main import app
 from app.models import Application
 
+
 def test_create_application_requires_admin_api_key():
     with TestClient(app) as client:
         response = client.post(
