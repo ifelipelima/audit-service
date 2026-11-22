@@ -31,3 +31,15 @@ def test_get_by_slug_existing_application():
     
     statement = session.scalar.call_args.args[0]
     assert "test-application" in statement.compile().params.values()
+
+def test_get_application_by_api_key_hash():
+    session = Mock(spec=Session)
+    expected = Application(name="Test Application", slug="test-application", api_key_hash="a" * 64)
+    session.scalar.return_value = expected
+
+    repository = ApplicationRepository(session)
+    result = repository.get_by_api_key_hash("a" * 64)
+
+    assert result is expected
+    statement = session.scalar.call_args.args[0]
+    assert "a" * 64 in statement.compile().params.values()
