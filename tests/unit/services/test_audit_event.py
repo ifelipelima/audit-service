@@ -8,11 +8,12 @@ from sqlalchemy.orm import Session
 
 from app.models.audit_event import AuditEvent
 from app.repositories.audit_event import AuditEventRepository
-from app.schemas.audit_event import AuditEventCreate
+from app.schemas.audit_event import AuditEventCreate, AuditEventFilters
 from app.services.audit_event import (
     AuditEventConflictError,
     AuditEventNotFoundError,
     AuditEventService,
+    InvalidPeriodError,
 )
 
 APPLICATION_ID = uuid4()
@@ -135,3 +136,23 @@ def test_get_missing_event(service, repository):
 
     with pytest.raises(AuditEventNotFoundError):
         service.get(APPLICATION_ID, uuid4())
+
+
+def test_list_events(service, repository):
+    filters = AuditEventFilters(actor_id="user-25")
+    repository.list.return_value = []
+
+    assert service.list(APPLICATION_ID, filters, 20, 0) == []
+    repository.list.assert_called_once_with(APPLICATION_ID, filters, 20, 0)
+
+
+def test_list_events_with_inverted_period(service, repository):
+    filters = AuditEventFilters(
+        occurred_from=datetime(2026, 11, 20, tzinfo=UTC),
+        occurred_to=datetime(2026, 11, 19, tzinfo=UTC),
+    )
+
+    with pytest.raises(InvalidPeriodError):
+        service.list(APPLICATION_ID, filters, 20, 0)
+
+    repository.list.assert_not_called()

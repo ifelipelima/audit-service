@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.audit_event import AuditEvent
 from app.repositories.audit_event import AuditEventRepository
-from app.schemas.audit_event import AuditEventCreate
+from app.schemas.audit_event import AuditEventCreate, AuditEventFilters
 
 
 def make_data(**overrides):
@@ -56,3 +56,21 @@ def test_get_by_id_filters_by_application():
     params = session.scalar.call_args.args[0].compile().params.values()
     assert application_id in params
     assert event_uuid in params
+
+
+def test_list_applies_filters_and_pagination():
+    session = Mock(spec=Session)
+    session.scalars.return_value = []
+    application_id = uuid4()
+    filters = AuditEventFilters(actor_id="user-25", action="occupation.ended")
+
+    result = AuditEventRepository(session).list(application_id, filters, 10, 20)
+
+    assert result == []
+    statement = session.scalars.call_args.args[0]
+    params = statement.compile().params
+    assert application_id in params.values()
+    assert "user-25" in params.values()
+    assert "occupation.ended" in params.values()
+    assert params["param_1"] == 10
+    assert params["param_2"] == 20
