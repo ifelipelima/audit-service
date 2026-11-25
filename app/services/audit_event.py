@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.models.audit_event import AuditEvent
 from app.repositories.audit_event import AuditEventRepository
-from app.schemas.audit_event import AuditEventCreate
+from app.schemas.audit_event import AuditEventCreate, AuditEventFilters
 
 
 class AuditEventConflictError(Exception):
@@ -13,6 +13,10 @@ class AuditEventConflictError(Exception):
 
 
 class AuditEventNotFoundError(Exception):
+    pass
+
+
+class InvalidPeriodError(Exception):
     pass
 
 
@@ -58,6 +62,21 @@ class AuditEventService:
 
         self.session.refresh(event)
         return event, True
+
+    def list(
+        self,
+        application_id: UUID,
+        filters: AuditEventFilters,
+        limit: int,
+        offset: int,
+    ) -> list[AuditEvent]:
+        if (
+            filters.occurred_from is not None
+            and filters.occurred_to is not None
+            and filters.occurred_from > filters.occurred_to
+        ):
+            raise InvalidPeriodError()
+        return self.repository.list(application_id, filters, limit, offset)
 
     def get(self, application_id: UUID, id: UUID) -> AuditEvent:
         event = self.repository.get_by_id(application_id, id)

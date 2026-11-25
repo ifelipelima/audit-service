@@ -25,6 +25,15 @@ class AuditEventCreated(BaseModel):
     created_at: datetime
 
 
+class AuditEventFilters(BaseModel):
+    actor_id: str | None = None
+    action: str | None = None
+    resource_type: str | None = None
+    resource_id: str | None = None
+    occurred_from: AwareDatetime | None = None
+    occurred_to: AwareDatetime | None = None
+
+
 class AuditEventRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -37,3 +46,9 @@ class AuditEventRead(BaseModel):
     occurred_at: datetime
     details: dict[str, Any] | None
     created_at: datetime
+
+
+class AuditEventPage(BaseModel):
+    items: list[AuditEventRead]
+    limit: int
+    offset: int
