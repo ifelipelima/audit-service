@@ -94,3 +94,51 @@ Execução dos testes automatizados com pytest:
 ```bash
 .\.venv\Scripts\python.exe -m pytest -v
 ```
+
+### Eventos de auditoria
+
+Todas as rotas de eventos exigem o header `X-API-Key` com a chave recebida no cadastro da aplicação. A aplicação é identificada pela chave, nunca pelo corpo da requisição, e só enxerga os próprios eventos.
+
+| Método | Endpoint | Resposta |
+| --- | --- | --- |
+| POST | `/api/v1/events` | `201` evento criado · `200` reenvio idêntico · `409` mesmo `event_id` com outro conteúdo |
+| GET | `/api/v1/events` | Lista paginada, do mais recente para o mais antigo |
+| GET | `/api/v1/events/{id}` | `200` evento · `404` inexistente ou de outra aplicação |
+
+Filtros de `GET /api/v1/events`: `actor_id`, `action`, `resource_type`, `resource_id`, `occurred_from` e `occurred_to` (com fuso horário). Paginação: `limit` (padrão 20, máximo 100) e `offset` (padrão 0).
+
+Se o banco estiver indisponível, a API responde `503`.
+
+### Cliente reutilizável
+
+O módulo `client/audit_client.py` encapsula as chamadas à API com HTTPX e repete automaticamente falhas transitórias (erros de rede e respostas `429`, `502`, `503` e `504`) com backoff exponencial. O reenvio usa o mesmo `event_id`, então o serviço não duplica o registro. Erros de validação e autenticação não são repetidos.
+
+```python
+from client.audit_client import AuditClient
+
+with AuditClient("http://localhost:8000", api_key="aud_...") as audit:
+    audit.send_event({
+        "event_id": "evt-001",
+        "actor_id": "user-25",
+        "action": "occupation.ended",
+        "resource_type": "occupation",
+        "occurred_at": "2026-11-20T14:00:00Z",
+    })
+    audit.list_events(actor_id="user-25", limit=10)
+```
+
+### Exemplos de consumo
+
+Dois consumidores independentes, cada um com a própria API Key, estão em `examples/`:
+
+- `maneja.py`: registra a ocupação de um terreno, reenvia um evento para demonstrar a idempotência e consulta o histórico.
+- `aria.py`: registra ações sobre um documento e demonstra o conflito ao reutilizar um `event_id`.
+
+Cadastre as duas aplicações em `POST /api/v1/applications/` (com `X-Admin-Key`) e execute, a partir da raiz do repositório:
+
+```bash
+$env:MANEJA_API_KEY="aud_..."; .\.venv\Scripts\python.exe -m examples.maneja
+$env:ARIA_API_KEY="aud_..."; .\.venv\Scripts\python.exe -m examples.aria
+```
+
+Para ver o retry em ação, pare o PostgreSQL (`docker compose stop db`) durante a execução: a API responde `503` e o cliente repete a chamada até o banco voltar ou as tentativas acabarem.
